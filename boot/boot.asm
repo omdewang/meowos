@@ -1,56 +1,48 @@
 org 0x7c00
+[bits 16]
 
-;
-;   CODE
-;
+mov [BOOT_DRIVE], dl
 
-mov bx, KEY
-call puts
+; high level steps
+; 1 - print some info (optional)
+; 2 - load as much sector is possible
+; 3 - load kernel
+; 4 - clear screen (optional)
+; 5 - switch to protected mode
+; 6 - jmp to kernel code
+
 
 CODE_SEG equ gdt_code - gdt_start
 DATA_SEG equ gdt_data - gdt_start
+KERNEL_OFFSET equ 0x1000
 
+; load sector and kernel
+mov bx, KERNEL_OFFSET
+mov ah, 2
+mov al, 15              ; loading 15 sectors
+mov ch, 0
+mov dh, 0
+mov cl, 2
+mov dl, [BOOT_DRIVE]
+int 0x13
+
+; clear screen
+mov ah, 0x0
+mov al, 0x3
+int 0x10
+
+; switch to PM
 cli
 lgdt [gdt_descriptor]
 mov eax, cr0
 mov eax, 0x1
 mov cr0, eax
+
+; jmp to kernel code
 jmp CODE_SEG:proc_mode
 
 
-PREV_DL: db 0x0
-PREV_DH: db 0x8
-KEY: db "Booting Done - Welcome to Meow Operating System", 0xa, 0x0
-DISK_READ_ERROR: db "Failed to read the disk", 0xa, 0x0
-PROC_MODE_REACHED : db "Your in 32-bit proctected mode", 0xa, 0x0
-
-
-
-newline:
-    mov ah, 0x2
-    mov bh, 0x0
-    mov dh, [PREV_DH]
-    mov dl, [PREV_DL]
-    inc dh
-    int 0x10
-    mov [PREV_DH], dh
-    mov [PREV_DL], dl
-    ret
-
-write_char:
-    mov al, [bx]
-    int 0x10
-    add bx, 0x1
-    cmp al, 0xa
-    je newline
-    cmp al, 0x0
-    jne write_char
-    ret
-
-puts:
-    mov ah, 0x0e
-    call write_char
-    ret
+BOOT_DRIVE : db 0x0
 
 ;
 ;
@@ -88,11 +80,16 @@ gdt_descriptor:
 
 [bits 32]
 proc_mode:
-    mov al, 'A'
-    mov ah, 0x0f
-    mov [0xb8000], ax
+    mov ax, DATA_SEG
+    mov dx, ax
+    mov ss, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ebp, 0x90000
+    mov esp, ebp
+    call KERNEL_OFFSET
     jmp $
-
 
 times 510 - ($-$$) db 0
 dw 0xaa55
