@@ -1,18 +1,24 @@
-void print_chars(char *c)
-{
-    char *video_memory = (char *)0xb8000;
+#include "include/print.h"
+#include "include/VGA_colors.h"
+#include "include/meowos.h"
 
-    int idx = 0;
-    while(c[idx] != '\0')
-    {
-        *video_memory = c[idx];
-        video_memory += 2;
-        idx++;
-    }
-}
+#ifdef __linux__
+#error "Not compiling for Meow OS"
+#endif
+
+#ifndef __i386__
+#error "Not compiling for x86"
+#endif
 
 void main()
 {
-    char *msg = "Hello from Meow Operating system";
-    print_chars(msg);
+    print("Meow Operating system. \n", BG_BLACK_FG_WHITE);
+
+    print("Made by -> ", BG_BLACK_FG_WHITE);
+    print(meowos_creator, BG_BLACK_FG_BRIGHTGREEN);
+    print("\n", BG_BLACK_FG_BLACK);
+
+    print("Version -> ", BG_BLACK_FG_WHITE);
+    print(meowos_version, BG_BLACK_FG_BRIGHTYELLOW);
+    print("\n", BG_BLACK_FG_BLACK);
 }
