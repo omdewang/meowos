@@ -1,4 +1,5 @@
 compiler/
+.vscode/
 *.o
 *.img
 *.bin
