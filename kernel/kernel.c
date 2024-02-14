@@ -1,14 +1,6 @@
 #include "include/print.h"
-#include "include/VGA_colors.h"
+#include "../drivers/vga/VGA_colors.h"
 #include "include/meowos.h"
-
-#ifdef __linux__
-#error "Not compiling for Meow OS"
-#endif
-
-#ifndef __i386__
-#error "Not compiling for x86"
-#endif
 
 void main()
 {

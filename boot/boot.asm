@@ -19,7 +19,7 @@ KERNEL_OFFSET equ 0x1000
 ; load sector and kernel
 mov bx, KERNEL_OFFSET
 mov ah, 2
-mov al, 20              ; loading 15 sectors
+mov al, 20              ; loading 20 sectors
 mov ch, 0
 mov dh, 0
 mov cl, 2
@@ -86,7 +86,7 @@ proc_mode:
     mov es, ax
     mov fs, ax
     mov gs, ax
-    mov ebp, 0x90000
+    mov ebp, 0x40000
     mov esp, ebp
     call KERNEL_OFFSET
     jmp $

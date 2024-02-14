@@ -1,14 +1,6 @@
 #include "../include/print.h"
-#include "../include/VGA_colors.h"
-
-struct VGA_char_struct *VGA_BUFFER = 0xb8000;
-unsigned int VGA_IDX = 0;
-
-unsigned int puton_vga_buffer(struct VGA_char_struct *char_struct)
-{
-    VGA_BUFFER[VGA_IDX] = *char_struct;
-    VGA_IDX++;
-}
+#include "../../drivers/vga/VGA_colors.h"
+#include "../../drivers/vga/vga.h"
 
 unsigned int strlen(char *str)
 {
@@ -34,7 +26,7 @@ unsigned int print(char *msg, char color)
     {
         if((msg[idx]) == '\n')
         {
-            VGA_IDX = ((VGA_IDX / VGA_WIDTH) + 1) * VGA_WIDTH;
+            vgaidx_newline();
         }
         else
         {
@@ -53,12 +45,6 @@ unsigned int print(char *msg, char color)
 unsigned int clear()
 {
     struct VGA_char_struct clear_char = {.CHARACTER = ' ', .COLOR = BG_BLACK_FG_BLACK};
-    VGA_IDX = 0;
-
-    for(int i = 0; i < VGA_BUFFER_SIZE; i++)
-    {
-        VGA_BUFFER[i] = clear_char;
-    }
-
+    vgaclear_buffer(&clear_char);
     return 0;
 }

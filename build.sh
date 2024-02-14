@@ -1,5 +1,11 @@
 #!/bin/bash
 
+cd drivers
+
+make all
+
+cd ..
+
 cd kernel
 
 make kernel
